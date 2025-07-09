@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Task List{% endblock %}
+
+{% block content %}
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Add Task</button>
+</form>
+
+<hr>
+
+<ul>
+    {% for task in tasks %}
+        <li>
+            {% if task.completed %}
+                <s>{{ task.description }}</s> (Completed)
+            {% else %}
+                {{ task.description }}
+            {% endif %}
+
+            <form method="post" action="{% url 'tasks:toggle_task' task.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit">
+                    {% if task.completed %}
+                        Mark Incomplete
+                    {% else %}
+                        Mark Complete
+                    {% endif %}
+                </button>
+            </form>
+
+            <form action="{% url 'tasks:edit_task' task.id %}" method="get" style="display:inline;">
+              <button type="submit">Edit</button>
+            </form>
+
+            <form method="post" action="{% url 'tasks:delete_task' task.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit">Delete</button>
+            </form>
+        </li>
+    {% empty %}
+        <li>No tasks yet!</li>
+    {% endfor %}
+</ul>
+{% endblock %}
